@@ -26,6 +26,42 @@ import pic2 from "./assets/pic2.jpg";
 import pic3 from "./assets/pic3.jpg";
 import daylightMusic from "./assets/tadhana.mp3";
 
+const LinedPaper = ({ children }) => (
+  <Box
+    w="full"
+    bg="white"
+    p={{ base: "8", md: "12" }}
+    borderRadius="sm"
+    boxShadow="xl"
+    position="relative"
+    // The red margin line
+    _before={{
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: { base: "30px", md: "50px" },
+      width: "2px",
+      height: "100%",
+      borderLeft: "2px solid",
+      borderColor: "red.100",
+    }}
+    // The horizontal blue lines
+    backgroundImage="linear-gradient(#f0f7ff 1.1px, transparent 1.1px)"
+    backgroundSize="100% 32px"
+    lineHeight="32px"
+  >
+    <Box
+      pl={{ base: "10", md: "14" }}
+      fontFamily="serif"
+      fontSize="xl"
+      color="gray.700"
+      fontStyle="italic"
+    >
+      {children}
+    </Box>
+  </Box>
+);
+
 const system = createSystem(defaultConfig, {
   theme: {
     tokens: {
@@ -305,28 +341,73 @@ function App() {
         </Section>
 
         {/* Section 4: Romantic Quote */}
+        {/* Section 4: The Poem on Paper */}
         <Section bg="whiteAlpha.400">
-          <VStack textAlign="center" gap="8">
-            <Heading fontSize="4xl" color="brand.600" letterSpacing="normal">
-              The Same Air
-            </Heading>
-            <VStack
-              fontSize={{ base: "xl", md: "3xl" }}
-              color="gray.700"
-              lineHeight="1.6"
-              fontStyle="italic"
-              gap="2"
+          <VStack gap="10" w="full">
+            <Heading
+              fontSize={{ base: "3xl", md: "4xl" }}
+              color="brand.600"
+              letterSpacing="normal"
+              textAlign="center"
             >
-              <Text>Same streets, same halls, a dozen years,</Text>
-              <Text>I held my breath and hid my fears.</Text>
-              <Text>A silent ghost within your view,</Text>
-              <Text>Just inches from the heart of you.</Text>
-              <Box h="4" />
-              <Text>I waited for the stars to align,</Text>
-              <Text>But you were the one to draw the line.</Text>
-              <Text>The string was pulled, the silence broke,</Text>
-              <Text>You said the words I never spoke.</Text>
-            </VStack>
+              A Page From My Heart
+            </Heading>
+
+            <MotionBox
+              initial={{ rotate: -2, y: 30, opacity: 0 }}
+              whileInView={{ rotate: 1, y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              w="full"
+              maxW="2xl"
+            >
+              <Box
+                w="full"
+                bg="white"
+                p={{ base: "8", md: "12" }}
+                borderRadius="sm"
+                boxShadow="2xl"
+                position="relative"
+                // The red margin line
+                _before={{
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: { base: "35px", md: "55px" },
+                  width: "2px",
+                  height: "100%",
+                  borderLeft: "2px solid",
+                  borderColor: "red.200",
+                }}
+                // The horizontal blue lines
+                backgroundImage="linear-gradient(#e9f2ff 1.1px, transparent 1.1px)"
+                backgroundSize="100% 40px" // Slightly larger lines for the poem
+              >
+                <VStack
+                  align="start"
+                  pl={{ base: "10", md: "16" }}
+                  fontFamily="serif"
+                  fontSize={{ base: "lg", md: "2xl" }}
+                  color="gray.700"
+                  fontStyle="italic"
+                  lineHeight="40px" // Must match backgroundSize exactly
+                  gap="0"
+                >
+                  <Text>Same streets, same halls, a dozen years,</Text>
+                  <Text>I held my breath and hid my fears.</Text>
+                  <Text>A silent ghost within your view,</Text>
+                  <Text>Just inches from the heart of you.</Text>
+
+                  {/* This empty text block creates a blank "line" on the paper */}
+                  <Text>&nbsp;</Text>
+
+                  <Text>I waited for the stars to align,</Text>
+                  <Text>But you were the one to draw the line.</Text>
+                  <Text>The string was pulled, the silence broke,</Text>
+                  <Text>You said the words I never spoke.</Text>
+                </VStack>
+              </Box>
+            </MotionBox>
           </VStack>
         </Section>
 
