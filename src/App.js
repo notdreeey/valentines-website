@@ -13,54 +13,26 @@ import {
   DialogRoot,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogBody,
   DialogBackdrop,
-  DialogCloseTrigger,
   Container,
-  SimpleGrid,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
+
+// Assets (Ensure paths are correct for your project)
+import flower from "./assets/flower.png";
 import pic1 from "./assets/pic1.jpg";
 import pic2 from "./assets/pic2.jpg";
 import pic3 from "./assets/pic3.jpg";
+import pic4 from "./assets/pic9.jpg";
+import pic5 from "./assets/pic8.jpg";
+import pic6 from "./assets/pic7.jpg";
+import pic7 from "./assets/pic6.jpg";
+import pic8 from "./assets/pic10.jpg";
+import pic9 from "./assets/pic11.jpg";
+import pic10 from "./assets/pic12.jpg";
+import pic11 from "./assets/pic5.jpg";
 import daylightMusic from "./assets/tadhana.mp3";
-
-const LinedPaper = ({ children }) => (
-  <Box
-    w="full"
-    bg="white"
-    p={{ base: "8", md: "12" }}
-    borderRadius="sm"
-    boxShadow="xl"
-    position="relative"
-    // The red margin line
-    _before={{
-      content: '""',
-      position: "absolute",
-      top: 0,
-      left: { base: "30px", md: "50px" },
-      width: "2px",
-      height: "100%",
-      borderLeft: "2px solid",
-      borderColor: "red.100",
-    }}
-    // The horizontal blue lines
-    backgroundImage="linear-gradient(#f0f7ff 1.1px, transparent 1.1px)"
-    backgroundSize="100% 32px"
-    lineHeight="32px"
-  >
-    <Box
-      pl={{ base: "10", md: "14" }}
-      fontFamily="serif"
-      fontSize="xl"
-      color="gray.700"
-      fontStyle="italic"
-    >
-      {children}
-    </Box>
-  </Box>
-);
 
 const system = createSystem(defaultConfig, {
   theme: {
@@ -80,6 +52,135 @@ const system = createSystem(defaultConfig, {
 
 const MotionBox = motion(Box);
 
+// --- HELPER COMPONENTS ---
+
+const LinedPaper = ({ children }) => (
+  <Box
+    w="full"
+    bg="white"
+    p={{ base: "8", md: "12" }}
+    borderRadius="sm"
+    boxShadow="xl"
+    position="relative"
+    _before={{
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: { base: "30px", md: "50px" },
+      width: "2px",
+      height: "100%",
+      borderLeft: "2px solid",
+      borderColor: "red.100",
+    }}
+    backgroundImage="linear-gradient(#f0f7ff 1.1px, transparent 1.1px)"
+    backgroundSize="100% 32px"
+    lineHeight="32px"
+  >
+    <Box
+      pl={{ base: "10", md: "14" }}
+      fontFamily="serif"
+      fontSize="xl"
+      color="gray.700"
+      fontStyle="italic"
+    >
+      {children}
+    </Box>
+  </Box>
+);
+
+const FlipCard = ({ item }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <Box
+      style={{ perspective: "1000px" }}
+      onClick={() => setIsFlipped(!isFlipped)}
+      cursor="pointer"
+    >
+      <MotionBox
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{
+          duration: 0.6,
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+        }}
+        style={{ transformStyle: "preserve-3d" }}
+        w={{ base: "150px", md: "200px" }}
+        h={{ base: "200px", md: "250px" }}
+        position="relative"
+      >
+        <Box
+          position="absolute"
+          inset="0"
+          bg={item.color}
+          borderRadius="xl"
+          boxShadow="lg"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          border="2px solid white"
+          overflow="hidden"
+          style={{ backfaceVisibility: "hidden" }}
+          _before={{
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${item.img})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(4px)",
+            opacity: 0.45,
+            zIndex: 0,
+          }}
+        >
+          <VStack zIndex={1} gap="0">
+            <Text
+              fontSize="5xl"
+              style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.2))" }}
+            >
+              {item.emoji}
+            </Text>
+            <Text
+              fontWeight="black"
+              color="brand.600"
+              fontSize="lg"
+              mt="2"
+              textShadow="0px 1px 2px white"
+            >
+              {item.title}
+            </Text>
+          </VStack>
+        </Box>
+
+        <Box
+          position="absolute"
+          inset="0"
+          bg="white"
+          borderRadius="xl"
+          boxShadow="lg"
+          p="4"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          border="2px solid"
+          borderColor={item.color}
+          style={{
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+          }}
+        >
+          <Text fontSize="sm" color="gray.700" fontWeight="bold">
+            {item.desc}
+          </Text>
+        </Box>
+      </MotionBox>
+    </Box>
+  );
+};
+
 const HeartBackground = () => {
   const hearts = useMemo(
     () =>
@@ -88,7 +189,7 @@ const HeartBackground = () => {
         left: `${Math.random() * 100}%`,
         duration: Math.random() * 5 + 4,
         delay: Math.random() * 5,
-        size: Math.random() * i * 0.5 + 10,
+        size: Math.random() * 20 + 10,
       })),
     [],
   );
@@ -98,7 +199,7 @@ const HeartBackground = () => {
       position="fixed"
       inset="0"
       pointerEvents="none"
-      zIndex={0}
+      zIndex={1}
       overflow="hidden"
     >
       {hearts.map((heart) => (
@@ -150,47 +251,193 @@ const Section = ({ children, bg = "transparent", maxW = "4xl" }) => (
     position="relative"
     p="6"
   >
-    <Container maxW={maxW} zIndex={1}>
+    <Container maxW={maxW} zIndex={2}>
       {children}
     </Container>
   </Box>
 );
 
+// --- MAIN APP ---
+
 function App() {
-  const [isAccepted, setIsAccepted] = useState(false);
   const [noButtonSize, setNoButtonSize] = useState(1);
   const [yesButtonSize, setYesButtonSize] = useState(1);
   const [noTextIndex, setNoTextIndex] = useState(0);
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
-  const [showQuestion, setShowQuestion] = useState(false);
 
-  // 3. Audio Logic Starts Here ==============================
+  const [isCurtainOpen, setIsCurtainOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Create the audio object once
+  // Unified Pagination State
+  const [currentPage, setCurrentPage] = useState(0);
+  // Track direction: 1 for forward, -1 for backward
+  const [direction, setDirection] = useState(1);
+
+  const letterPages = [
+    {
+      title: "To My Dearest Lyndee,",
+      content: (
+        <>
+          <Text mb="4">
+            It’s wild to think we spent four years in the same orbit without
+            ever colliding. I like to think we were just becoming the people we
+            needed to be before the universe finally decided we were ready for
+            each other.
+          </Text>
+        </>
+      ),
+    },
+    {
+      title: "The Little Things,",
+      content: (
+        <>
+          <Text mb="4">
+            Beyond everything else, I’m just grateful for the way you make life
+            feel "real." Whether we’re laughing through the chaos or just
+            sitting in a comfortable silence, you’ve become the best part of my
+            daily rhythm.
+          </Text>
+        </>
+      ),
+    },
+    {
+      title: "A Shared Future,",
+      content: (
+        <>
+          <Text mb="4">
+            I don’t just want to be there for the highlight reel. My wish is to
+            be the person you turn to when the day is heavy, the one who knows
+            exactly how you take your coffee, and the one who never gets tired
+            of hearing your stories.
+          </Text>
+        </>
+      ),
+    },
+    {
+      title: "Always You,",
+      content: (
+        <>
+          <Text mb="4">
+            I promise to keep choosing you—not just when it’s easy, but
+            especially when it’s not. Thank you for being my constant, my peace,
+            and my favorite adventure.
+          </Text>
+          <Text>
+            You aren't just a part of my life; you are my{" "}
+            <strong>tadhana :)</strong>
+          </Text>
+        </>
+      ),
+    },
+  ];
+
+  // Map out our view states
+  const QUESTION_PAGE = letterPages.length;
+  const YAY_PAGE = letterPages.length + 1;
+
+  const handleNextPage = () => {
+    setDirection(1);
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    setDirection(-1);
+    setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleRestart = () => {
+    setDirection(1); // Reset direction to forward for the "new start" feel
+    setCurrentPage(0);
+    // Reset confetti buttons states if you want to
+    setNoButtonSize(1);
+    setYesButtonSize(1);
+  };
+
+  // --- ANIMATION VARIANTS ---
+  const pageVariants = {
+    enter: (direction) => ({
+      rotateY: direction > 0 ? 90 : -90,
+      opacity: 0,
+      scale: 0.8,
+    }),
+    center: {
+      rotateY: 0,
+      opacity: 1,
+      scale: 1,
+      zIndex: 1,
+    },
+    exit: (direction) => ({
+      rotateY: direction < 0 ? 90 : -90,
+      opacity: 0,
+      scale: 0.8,
+      zIndex: 0,
+    }),
+  };
+
+  const handleYesClick = () => {
+    setDirection(1);
+    setCurrentPage(YAY_PAGE);
+
+    // Pink and red color palette
+    const colors = ["#d53f8c", "#ed64a6", "#fbb6ce", "#ffffff", "#ff0000"];
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { x: 0, y: 0.8 },
+      colors: colors,
+      angle: 60,
+      zIndex: 2000,
+    });
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { x: 1, y: 0.8 },
+      colors: colors,
+      angle: 120,
+      zIndex: 2000,
+    });
+  };
+
+  // Carousel State
+  const [currentImg, setCurrentImg] = useState(0);
+  const images = [
+    { src: pic1, caption: "Remember this day? You looked so happy." },
+    { src: pic2, caption: "I love the way you look at the camera." },
+    { src: pic3, caption: "Every second with you is a gift." },
+    { src: pic4, caption: "Prolly your favorite picture." },
+    { src: pic5, caption: "Every small things" },
+    { src: pic6, caption: "Lowkey yarn?" },
+    { src: pic7, caption: "FIRST DATEEEE!." },
+  ];
+
+  useEffect(() => {
+    if (isCurtainOpen) {
+      const timer = setInterval(() => {
+        setCurrentImg((prev) => (prev + 1) % images.length);
+      }, 3500);
+      return () => clearInterval(timer);
+    }
+  }, [isCurtainOpen, images.length]);
+
   const audio = useMemo(() => {
     const a = new Audio(daylightMusic);
-    a.loop = true; // Keeps the music playing on loop
+    a.loop = true;
     return a;
   }, []);
 
-  // Handle Play/Pause
   useEffect(() => {
     if (isPlaying) {
       audio.play().catch((error) => {
         console.log("Autoplay prevented:", error);
-        setIsPlaying(false); // Reset state if browser blocks it
+        setIsPlaying(false);
       });
     } else {
       audio.pause();
     }
-
-    // Cleanup on unmount
-    return () => {
-      audio.pause();
-    };
+    return () => audio.pause();
   }, [isPlaying, audio]);
-  // =========================================================
 
   const handleNoClick = () => {
     setNoButtonSize((prev) => Math.max(prev * 0.7, 0.4));
@@ -206,367 +453,612 @@ function App() {
 
   return (
     <ChakraProvider value={system}>
-      <Box bg="brand.50" minH="100vh" overflowX="hidden">
+      <Box bg="brand.50" minH="100vh" overflowX="hidden" position="relative">
         <HeartBackground />
 
-        {/* 4. Music Toggle Button (Fixed to screen) */}
-        <Box position="fixed" bottom="4" right="4" zIndex="1000">
+        <Box position="fixed" bottom="6" right="6" zIndex="3000">
           <Button
             onClick={() => setIsPlaying(!isPlaying)}
             colorPalette="pink"
             variant="solid"
-            size="sm"
             borderRadius="full"
-            boxShadow="md"
+            boxShadow="lg"
+            size="md"
           >
-            {isPlaying ? "Pause 🎵" : "Play Music ▶️"}
+            {isPlaying ? "Pause 🎵" : "Play 🎵"}
           </Button>
         </Box>
 
-        {/* Section 1: Hero */}
-        <Section>
-          <VStack gap="8" textAlign="center">
-            <MotionBox
-              animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
+        <AnimatePresence>
+          {!isCurtainOpen && (
+            <Box
+              position="fixed"
+              inset="0"
+              zIndex="2000"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              overflow="hidden"
             >
-              <Text fontSize="9xl">❤️</Text>
-            </MotionBox>
-
-            <Heading
-              fontSize={{ base: "4xl", md: "7xl" }}
-              color="brand.600"
-              lineHeight="1.2"
-              letterSpacing="normal"
-            >
-              Happy Valentine's Day!
-            </Heading>
-            <Text fontSize="xl" color="gray.600">
-              Scroll down to see why I love you...
-            </Text>
-          </VStack>
-        </Section>
-
-        {/* Section 2: Why I Love You */}
-        <Section bg="whiteAlpha.400">
-          <VStack gap="10" w="100%">
-            <Heading
-              fontSize={{ base: "3xl", md: "4xl" }}
-              color="brand.500"
-              lineHeight="1.2"
-              textAlign="center"
-            >
-              I love you for many things...
-            </Heading>
-            <VStack gap="6" w="full">
-              {["Your Smile", "Your Kindness", "Your Laugh"].map((title, i) => (
+              <MotionBox
+                position="absolute"
+                left="0"
+                top="0"
+                bottom="0"
+                w="50.5%"
+                bg="brand.600"
+                boxShadow="10px 0 30px rgba(0,0,0,0.3)"
+                initial={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
+                zIndex={2001}
+              >
                 <Box
-                  key={i}
                   w="full"
-                  p="6"
-                  bg="white"
-                  borderRadius="xl"
-                  borderLeft="6px solid"
-                  borderColor="brand.200"
-                  boxShadow="sm"
-                >
-                  <HStack gap="6">
-                    <Text fontSize="4xl">
-                      {i === 0 ? "✨" : i === 1 ? "🌸" : "🎧"}
-                    </Text>
-                    <VStack align="start" gap="0">
-                      <Heading
-                        fontSize="xl"
-                        color="brand.600"
-                        letterSpacing="normal"
-                      >
-                        {title}
-                      </Heading>
-                      <Text color="gray.600" fontSize="lg">
-                        {i === 0
-                          ? "It literally brightens up my entire day."
-                          : i === 1
-                            ? "The way you care for everyone around you."
-                            : "My favorite sound in the whole world."}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </Box>
-              ))}
-            </VStack>
-          </VStack>
-        </Section>
-
-        {/* Section 3: Memories */}
-        <Section maxW="7xl">
-          <VStack gap="12" w="full" align="stretch">
-            <Heading
-              fontSize={{ base: "3xl", md: "4xl" }}
-              color="brand.500"
-              textAlign="center"
-              lineHeight="1.2"
-            >
-              Our Memories
-            </Heading>
-            <SimpleGrid w="full" gap="10" columns={{ base: 1, sm: 2, lg: 3 }}>
-              {[pic1, pic2, pic3].map((p, i) => (
-                <VStack
-                  key={i}
+                  h="full"
+                  opacity="0.1"
+                  backgroundImage="linear-gradient(90deg, transparent 0%, #000 50%, transparent 100%)"
+                  backgroundSize="40px 100%"
+                />
+              </MotionBox>
+              <MotionBox
+                position="absolute"
+                right="0"
+                top="0"
+                bottom="0"
+                w="50.5%"
+                bg="brand.600"
+                boxShadow="-10px 0 30px rgba(0,0,0,0.3)"
+                initial={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
+                zIndex={2001}
+              >
+                <Box
                   w="full"
-                  bg="white"
-                  p="4"
-                  borderRadius="2xl"
-                  boxShadow="md"
-                  gap="4"
-                >
-                  <Image
-                    src={p}
-                    alt={`Memory ${i}`}
-                    borderRadius="xl"
-                    objectFit="cover"
-                    w="full"
-                    h="500px"
-                  />
-                  <Text color="gray.600" fontSize="sm" textAlign="center">
-                    {i === 0
-                      ? "Remember this day? You looked so happy."
-                      : i === 1
-                        ? "I love the way you look at the camera."
-                        : "Every second with you is a gift."}
+                  h="full"
+                  opacity="0.1"
+                  backgroundImage="linear-gradient(90deg, transparent 0%, #000 50%, transparent 100%)"
+                  backgroundSize="40px 100%"
+                />
+              </MotionBox>
+              <MotionBox
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ delay: 0.5 }}
+                zIndex={2002}
+              >
+                <VStack gap="6">
+                  <Box
+                    cursor="pointer"
+                    onClick={() => {
+                      setIsCurtainOpen(true);
+                      setIsPlaying(true);
+                    }}
+                    _hover={{ transform: "scale(1.1)" }}
+                    transition="transform 0.2s"
+                  >
+                    <Text fontSize="9xl">🎁</Text>
+                  </Box>
+                  <Text
+                    color="white"
+                    fontWeight="bold"
+                    fontSize="2xl"
+                    letterSpacing="widest"
+                  >
+                    CLICK TO UNWRAP
                   </Text>
                 </VStack>
-              ))}
-            </SimpleGrid>
-          </VStack>
-        </Section>
+              </MotionBox>
+            </Box>
+          )}
+        </AnimatePresence>
 
-        {/* Section 4: The Poem on Paper */}
-        <Section bg="whiteAlpha.400">
-          <VStack gap="10" w="full">
-            <Heading
-              fontSize={{ base: "3xl", md: "4xl" }}
-              color="brand.600"
-              letterSpacing="normal"
-              textAlign="center"
-            >
-              A Page From My Heart
-            </Heading>
+        <Box opacity={isCurtainOpen ? 1 : 0} transition="opacity 1s ease-in">
+          <Section>
+            <VStack gap="8" textAlign="center">
+              <MotionBox
+                animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 3 }}
+              >
+                <Text fontSize="9xl">❤️</Text>
+              </MotionBox>
+              <Heading
+                fontSize={{ base: "4xl", md: "7xl" }}
+                color="brand.600"
+                lineHeight="1.2"
+              >
+                Lyndee, some things are just written in the stars...
+              </Heading>
+              <Text fontSize="xl" color="gray.600">
+                But I wanted to write this one down for you myself. Take a look.
+              </Text>
+            </VStack>
+          </Section>
 
-            <MotionBox
-              initial={{ rotate: -2, y: 30, opacity: 0 }}
-              whileInView={{ rotate: 1, y: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              w="full"
-              maxW="2xl"
-            >
-              {/* WE ARE NOW USING THE COMPONENT HERE */}
-              <LinedPaper>
-                <VStack align="start" gap="0">
-                  <Text>Same streets, same halls, a dozen years,</Text>
-                  <Text>I held my breath and hid my fears.</Text>
-                  <Text>A silent ghost within your view,</Text>
-                  <Text>Just inches from the heart of you.</Text>
-
-                  <Text>&nbsp;</Text>
-
-                  <Text>I waited for the stars to align,</Text>
-                  <Text>But you were the one to draw the line.</Text>
-                  <Text>The string was pulled, the silence broke,</Text>
-                  <Text>You said the words I never spoke.</Text>
-                </VStack>
-              </LinedPaper>
-            </MotionBox>
-          </VStack>
-        </Section>
-
-        {/* Section 5: The Letter */}
-        <Section bg="brand.100">
-          <VStack gap="8" textAlign="center">
-            <MotionBox
-              animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-            >
-              <Text fontSize="9xl">💌</Text>
-            </MotionBox>
-            <Heading
-              color="brand.600"
-              fontSize={{ base: "3xl", md: "5xl" }}
-              letterSpacing="normal"
-            >
-              One Last Thing...
-            </Heading>
-            <DialogRoot placement="center" motionPreset="slide-in-bottom">
-              <DialogTrigger asChild>
-                <Button
-                  colorPalette="pink"
-                  size="xl"
-                  borderRadius="full"
-                  px="16"
-                  fontSize="xl"
+          <Section bg="whiteAlpha.400">
+            <VStack gap={{ base: "8", md: "12" }} w="100%">
+              <VStack gap="2">
+                <Heading
+                  fontSize={{ base: "3xl", md: "4xl" }}
+                  color="brand.500"
+                  textAlign="center"
                 >
-                  Open My Letter
-                </Button>
-              </DialogTrigger>
-              <DialogBackdrop
-                bg="rgba(0, 0, 0, 0.6)"
-                backdropFilter="blur(4px)"
-                position="fixed"
-                zIndex="1400"
-              />
-              <DialogContent
-                position="fixed"
-                top="50%"
-                left="50%"
-                transform="translate(-50%, -50%)"
-                zIndex="1500"
-                bg="white"
-                p={{ base: "6", md: "10" }}
-                borderRadius="3xl"
-                width="450px"
-                maxWidth="90vw"
-                minH="500px"
+                  The Little Things...
+                </Heading>
+                <Text color="gray.500" fontSize="sm">
+                  (Click each card to reveal)
+                </Text>
+              </VStack>
+              <HStack gap="6" wrap="wrap" justify="center" w="full">
+                {[
+                  {
+                    title: "The Vibes",
+                    desc: "How you make every mundane moment feel like a scene from a movie.",
+                    emoji: "🎬",
+                    color: "#FFE5EC",
+                    img: pic11,
+                  },
+                  {
+                    title: "The Tadhana",
+                    desc: "The way the universe finally brought us together after many close encounters",
+                    emoji: "✨",
+                    color: "#FFF0F3",
+                    img: pic9,
+                  },
+                  {
+                    title: "The Support",
+                    desc: "You're my biggest cheerleader, and I hope I'm yours too.",
+                    emoji: "📣",
+                    color: "#FFD1DC",
+                    img: pic10,
+                  },
+                  {
+                    title: "Your Chaos",
+                    desc: "The funny, random things you say that only I get to hear.",
+                    emoji: "🌪️",
+                    color: "#F0E6FF",
+                    img: pic8,
+                  },
+                ].map((item, i) => (
+                  <FlipCard key={i} item={item} />
+                ))}
+              </HStack>
+            </VStack>
+          </Section>
+
+          <Section maxW="2xl" bg="brand.100">
+            <VStack gap="12" w="full">
+              <Heading
+                fontSize={{ base: "3xl", md: "4xl" }}
+                color="brand.500"
+                textAlign="center"
+              >
+                Our Memories
+              </Heading>
+              <Box
+                position="relative"
+                w="full"
+                h={{ base: "550px", md: "750px" }}
                 display="flex"
-                flexDirection="column"
+                alignItems="center"
                 justifyContent="center"
               >
-                <DialogCloseTrigger />
                 <AnimatePresence mode="wait">
-                  {!isAccepted ? (
-                    !showQuestion ? (
-                      <MotionBox
-                        key="message"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
+                  <MotionBox
+                    key={currentImg}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.6 }}
+                    w="full"
+                    h="full"
+                    bg="white"
+                    p="4"
+                    borderRadius="2xl"
+                    boxShadow="2xl"
+                  >
+                    <Image
+                      src={images[currentImg].src}
+                      alt="Memory"
+                      borderRadius="xl"
+                      objectFit="cover"
+                      w="full"
+                      h="85%"
+                    />
+                    <VStack mt="4">
+                      <Text
+                        color="gray.700"
+                        fontWeight="medium"
+                        fontSize="lg"
+                        textAlign="center"
                       >
-                        <VStack gap="6">
-                          <DialogHeader p="0">
-                            <Heading
-                              color="brand.600"
-                              fontSize="3xl"
-                              letterSpacing="normal"
-                            >
-                              To My Dearest,
-                            </Heading>
-                          </DialogHeader>
-                          <DialogBody p="0" textAlign="center">
-                            <Text
-                              fontSize="lg"
-                              color="gray.700"
-                              lineHeight="1.6"
-                            >
-                              I wanted to take a moment to tell you how much you
-                              mean to me. Every day with you feels like a
-                              beautiful dream. You are my best friend and my
-                              entire world. And just like the music, you are my
-                              tadhana :)
-                            </Text>
-                            <Button
-                              mt="8"
-                              colorPalette="pink"
-                              variant="surface"
-                              onClick={() => setShowQuestion(true)}
-                            >
-                              Click to continue...
-                            </Button>
-                          </DialogBody>
-                        </VStack>
-                      </MotionBox>
-                    ) : (
-                      <MotionBox
-                        key="q"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                      >
-                        <VStack gap="6">
-                          <DialogHeader p="0">
-                            <Heading
-                              color="brand.600"
-                              fontSize="4xl"
-                              textAlign="center"
-                              letterSpacing="normal"
-                            >
-                              My Valentine?
-                            </Heading>
-                          </DialogHeader>
-                          <DialogBody p="0" textAlign="center">
-                            <Image
-                              src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1bmxueGZidWpxZnZ3ZWpueGZidWpxZnZ3ZWpueGZidWpxZnZ3ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif"
-                              width="150px"
-                              mx="auto"
-                              mb="6"
-                            />
-                            <Text fontSize="xl" color="gray.700">
-                              Will you be my Valentine? 🌹
-                            </Text>
-                            <HStack
-                              gap="6"
-                              justifyContent="center"
-                              minH="120px"
-                              mt="6"
-                              position="relative"
-                            >
-                              <Button
-                                colorPalette="pink"
-                                size="xl"
-                                px="10"
-                                css={{ transform: `scale(${yesButtonSize})` }}
-                                onClick={() => setIsAccepted(true)}
-                                zIndex={10}
-                              >
-                                Yes!
-                              </Button>
-                              <MotionBox
-                                animate={{ x: noButtonPos.x, y: noButtonPos.y }}
-                              >
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  color="gray.400"
-                                  css={{ transform: `scale(${noButtonSize})` }}
-                                  onClick={handleNoClick}
-                                >
-                                  No
-                                </Button>
-                              </MotionBox>
-                            </HStack>
-                          </DialogBody>
-                        </VStack>
-                      </MotionBox>
-                    )
-                  ) : (
-                    <MotionBox
-                      key="accepted"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                    >
-                      <VStack gap="6" py="8" textAlign="center">
-                        <Image
-                          src="https://images.wondershare.com/filmora/article-images/ai-cat-dacing.gif"
-                          width="200px"
-                          borderRadius="lg"
-                          mx="auto"
-                        />
-                        <Heading
-                          color="brand.600"
-                          fontSize="5xl"
-                          letterSpacing="normal"
-                        >
-                          Yay!!! ❤️
-                        </Heading>
-                        <Text fontSize="xl" color="gray.600">
-                          I'll see you on the 14th! 😘
-                        </Text>
-                      </VStack>
-                    </MotionBox>
-                  )}
+                        {images[currentImg].caption}
+                      </Text>
+                    </VStack>
+                  </MotionBox>
                 </AnimatePresence>
-              </DialogContent>
-            </DialogRoot>
-          </VStack>
-        </Section>
+              </Box>
+              <HStack gap="3">
+                {images.map((_, i) => (
+                  <Box
+                    key={i}
+                    w="3"
+                    h="3"
+                    borderRadius="full"
+                    bg={currentImg === i ? "brand.500" : "brand.200"}
+                    cursor="pointer"
+                    onClick={() => setCurrentImg(i)}
+                    transition="background 0.3s"
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          </Section>
+
+          <Section bg="whiteAlpha.400">
+            <VStack gap="10" w="full">
+              <Heading
+                fontSize={{ base: "3xl", md: "4xl" }}
+                color="brand.600"
+                textAlign="center"
+              >
+                A Page From My Heart
+              </Heading>
+              <MotionBox
+                initial={{ rotate: -2, y: 30, opacity: 0 }}
+                whileInView={{ rotate: 1, y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                w="full"
+                maxW="2xl"
+              >
+                <LinedPaper>
+                  <VStack align="start" gap="0">
+                    <Text>Same streets, same halls, a dozen years,</Text>
+                    <Text>I held my breath and hid my fears.</Text>
+                    <Text>A silent ghost within your view,</Text>
+                    <Text>Just inches from the heart of you.</Text>
+                    <Text>&nbsp;</Text>
+                    <Text>I waited for the stars to align,</Text>
+                    <Text>But you were the one to draw the line.</Text>
+                    <Text>The string was pulled, the silence broke,</Text>
+                    <Text>You said the words I never spoke.</Text>
+                  </VStack>
+                </LinedPaper>
+              </MotionBox>
+            </VStack>
+          </Section>
+
+          <Section bg="brand.100">
+            <VStack gap="8" textAlign="center">
+              <MotionBox
+                animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 3 }}
+              >
+                <Text fontSize="9xl">💌</Text>
+              </MotionBox>
+              <Heading color="brand.600" fontSize={{ base: "3xl", md: "5xl" }}>
+                One Last Thing...
+              </Heading>
+              <DialogRoot placement="center" motionPreset="none">
+                <DialogTrigger asChild>
+                  <Button
+                    colorPalette="pink"
+                    size="xl"
+                    borderRadius="full"
+                    px="16"
+                    boxShadow="xl"
+                  >
+                    Open My Letter
+                  </Button>
+                </DialogTrigger>
+                <DialogBackdrop
+                  bg="rgba(0,0,0,0.6)"
+                  backdropFilter="blur(4px)"
+                  zIndex="1400"
+                />
+                <DialogContent
+                  position="fixed"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                  zIndex="1500"
+                  bg="transparent"
+                  boxShadow="none"
+                  border="none"
+                  w={{ base: "90vw", md: "500px" }}
+                  px={{ base: "4", md: "0" }}
+                >
+                  <Box
+                    position="relative"
+                    w="full"
+                    maxW="500px"
+                    mx="auto"
+                    h="600px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{ perspective: "1000px" }}
+                  >
+                    {/* Envelope Background & Flap sequence */}
+                    {currentPage === 0 && direction === 1 && (
+                      <>
+                        <MotionBox
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: [1, 1, 0] }}
+                          transition={{
+                            times: [0, 0.8, 1],
+                            duration: 2,
+                            delay: 0.5,
+                          }}
+                          position="absolute"
+                          bottom="10%"
+                          left="50%"
+                          transform="translateX(-50%)"
+                          w="400px"
+                          h="250px"
+                          bg="#fdfcf0"
+                          borderRadius="md"
+                          boxShadow="lg"
+                          zIndex={1}
+                          style={{ pointerEvents: "none" }}
+                          _before={{
+                            content: '""',
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "70%",
+                            bg: "#f7f3e3",
+                            clipPath:
+                              "polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%)",
+                            zIndex: 3,
+                            borderRadius: "0 0 8px 8px",
+                          }}
+                        />
+                        <MotionBox
+                          initial={{ rotateX: 0, opacity: 1, zIndex: 4 }}
+                          animate={{
+                            rotateX: 160,
+                            opacity: [1, 1, 0],
+                            zIndex: 1,
+                          }}
+                          transition={{
+                            rotateX: { duration: 0.8, delay: 0.2 },
+                            opacity: {
+                              times: [0, 0.8, 1],
+                              duration: 2,
+                              delay: 0.5,
+                            },
+                            zIndex: { delay: 1, duration: 0 },
+                          }}
+                          position="absolute"
+                          bottom="calc(10% + 75px)"
+                          left="50%"
+                          ml="-200px"
+                          w="400px"
+                          h="175px"
+                          bg="#f7f3e3"
+                          style={{ originY: 0, pointerEvents: "none" }}
+                          clipPath="polygon(0 0, 50% 100%, 100% 0)"
+                          borderRadius="8px 8px 0 0"
+                        />
+                      </>
+                    )}
+
+                    {/* Unified Letter Content */}
+                    <AnimatePresence mode="wait" custom={direction}>
+                      <MotionBox
+                        key={currentPage}
+                        custom={direction}
+                        // Use variants for cleaner logic
+                        variants={pageVariants}
+                        // Special override for initial envelope opening (page 0, direction 1)
+                        initial={
+                          currentPage === 0 && direction === 1
+                            ? { y: 250, opacity: 0, scale: 0.85, rotateY: 0 }
+                            : "enter"
+                        }
+                        animate={
+                          currentPage === 0 && direction === 1
+                            ? { y: 0, opacity: 1, scale: 1, rotateY: 0 }
+                            : "center"
+                        }
+                        exit="exit"
+                        transition={{
+                          delay: currentPage === 0 && direction === 1 ? 1.0 : 0,
+                          duration: 0.8,
+                          ease: "easeOut",
+                        }}
+                        style={{ transformOrigin: "left center" }}
+                        w="full"
+                        position="absolute"
+                      >
+                        <LinedPaper>
+                          {/* VIEW 1: Standard Letter Pages */}
+                          {currentPage < QUESTION_PAGE && (
+                            <VStack align="start" gap="4" minH="350px">
+                              <Heading
+                                fontSize="2xl"
+                                color="brand.600"
+                                fontFamily="serif"
+                              >
+                                {letterPages[currentPage].title}
+                              </Heading>
+                              <Box
+                                fontSize="md"
+                                color="gray.700"
+                                fontFamily="serif"
+                                lineHeight="1.8"
+                                flex="1"
+                              >
+                                {letterPages[currentPage].content}
+                              </Box>
+                              <HStack
+                                w="full"
+                                justify="space-between"
+                                align="center"
+                                mt="4"
+                              >
+                                {/* LEFT: Back Button */}
+                                <Box
+                                  flex="1"
+                                  display="flex"
+                                  justifyContent="flex-start"
+                                >
+                                  {currentPage > 0 && (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      colorPalette="pink"
+                                      onClick={handlePrevPage}
+                                    >
+                                      ← Back
+                                    </Button>
+                                  )}
+                                </Box>
+
+                                {/* CENTER: Page Number */}
+                                <Text
+                                  fontSize="xs"
+                                  color="gray.400"
+                                  textAlign="center"
+                                  flex="1"
+                                >
+                                  Page {currentPage + 1} of {letterPages.length}
+                                </Text>
+
+                                {/* RIGHT: Next Button */}
+                                <Box
+                                  flex="1"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                >
+                                  <Button
+                                    size="sm"
+                                    colorPalette="pink"
+                                    variant="surface"
+                                    onClick={handleNextPage}
+                                  >
+                                    {currentPage === letterPages.length - 1
+                                      ? "One last thing..."
+                                      : "Next Page ➔"}
+                                  </Button>
+                                </Box>
+                              </HStack>
+                            </VStack>
+                          )}
+
+                          {/* VIEW 2: The Big Question */}
+                          {currentPage === QUESTION_PAGE && (
+                            <VStack
+                              gap="2"
+                              textAlign="center"
+                              minH="350px"
+                              justify="center"
+                            >
+                              <Heading
+                                fontSize="2xl"
+                                color="brand.600"
+                                fontFamily="serif"
+                              >
+                                So, Lyndee. Will you be my valentine?
+                              </Heading>
+                              <Image
+                                src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1bmxueGZidWpxZnZ3ZWpueGZidWpxZnZ3ZWpueGZidWpxZnZ3ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif"
+                                w="80px"
+                              />
+                              <HStack gap="4" mt="4">
+                                <Button
+                                  colorPalette="pink"
+                                  css={{
+                                    transform: `scale(${yesButtonSize})`,
+                                  }}
+                                  onClick={handleYesClick}
+                                >
+                                  Yes!
+                                </Button>
+                                <MotionBox
+                                  animate={{
+                                    x: noButtonPos.x,
+                                    y: noButtonPos.y,
+                                  }}
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    size="xs"
+                                    css={{
+                                      transform: `scale(${noButtonSize})`,
+                                    }}
+                                    onClick={handleNoClick}
+                                  >
+                                    No
+                                  </Button>
+                                </MotionBox>
+                              </HStack>
+                            </VStack>
+                          )}
+
+                          {/* VIEW 3: The Acceptance (Yay) */}
+                          {currentPage === YAY_PAGE && (
+                            <VStack
+                              gap="6"
+                              minH="350px"
+                              justify="center"
+                              align="center"
+                              textAlign="center"
+                              position="relative" // needed for absolute positioning of restart button
+                            >
+                              <Image
+                                src={flower}
+                                width="180px"
+                                borderRadius="lg"
+                              />
+                              <Heading
+                                color="brand.600"
+                                fontSize="4xl"
+                                fontFamily="serif"
+                              >
+                                I LOVE YOU!
+                              </Heading>
+                              <Text
+                                fontSize="lg"
+                                color="gray.700"
+                                fontFamily="serif"
+                                fontStyle="italic"
+                              >
+                                I'll see you on the 14th, Baby! <br /> <br />
+                                (Sorry if i couldn't buy you flowers today. I'll
+                                use my perks as an IT student nalang :3)
+                              </Text>
+
+                              {/* RESTART BUTTON */}
+                              <Box position="absolute" bottom="0" right="0">
+                                <Text
+                                  as="span"
+                                  fontSize="xs"
+                                  textDecoration="underline"
+                                  cursor="pointer"
+                                  color="gray.400"
+                                  onClick={handleRestart}
+                                  _hover={{ color: "brand.500" }}
+                                >
+                                  Read Again
+                                </Text>
+                              </Box>
+                            </VStack>
+                          )}
+                        </LinedPaper>
+                      </MotionBox>
+                    </AnimatePresence>
+                  </Box>
+                </DialogContent>
+              </DialogRoot>
+            </VStack>
+          </Section>
+        </Box>
       </Box>
     </ChakraProvider>
   );
