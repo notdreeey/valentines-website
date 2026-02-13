@@ -785,13 +785,14 @@ function App() {
                     {/* Envelope Background & Flap sequence */}
                     {currentPage === 0 && direction === 1 && (
                       <>
+                        {/* Envelope Body - Z-Index 1 (Lower than Letter) */}
                         <MotionBox
                           initial={{ opacity: 1 }}
                           animate={{ opacity: [1, 1, 0] }}
                           transition={{
-                            times: [0, 0.8, 1],
-                            duration: 2,
-                            delay: 0.5,
+                            times: [0, 0.9, 1],
+                            duration: 0.5,
+                            delay: 2.5, // Fades out AFTER letter is fully up
                           }}
                           position="absolute"
                           bottom="10%"
@@ -818,21 +819,24 @@ function App() {
                             borderRadius: "0 0 8px 8px",
                           }}
                         />
+                        {/* Envelope Flap - Animate first */}
                         <MotionBox
-                          initial={{ rotateX: 0, opacity: 1, zIndex: 4 }}
+                          initial={{ rotateX: 0, zIndex: 4 }}
                           animate={{
-                            rotateX: 160,
-                            opacity: [1, 1, 0],
-                            zIndex: 1,
+                            rotateX: 180,
+                            zIndex: 0, // Moves behind after opening
                           }}
                           transition={{
                             rotateX: { duration: 0.8, delay: 0.2 },
-                            opacity: {
-                              times: [0, 0.8, 1],
-                              duration: 2,
-                              delay: 0.5,
-                            },
-                            zIndex: { delay: 1, duration: 0 },
+                            zIndex: { delay: 0.4 }, // Change z-index mid-swing
+                          }}
+                          // Fade out matches the body
+                          exit={{ opacity: 0 }}
+                          style={{
+                            opacity: currentPage === 0 ? 1 : 0,
+                            transition: "opacity 0.5s 2.5s",
+                            originY: 0,
+                            pointerEvents: "none",
                           }}
                           position="absolute"
                           bottom="calc(10% + 75px)"
@@ -841,14 +845,13 @@ function App() {
                           w="400px"
                           h="175px"
                           bg="#f7f3e3"
-                          style={{ originY: 0, pointerEvents: "none" }}
                           clipPath="polygon(0 0, 50% 100%, 100% 0)"
                           borderRadius="8px 8px 0 0"
                         />
                       </>
                     )}
 
-                    {/* Unified Letter Content */}
+                    {/* Unified Letter Content - Z-Index 10 (Higher than envelope) */}
                     <AnimatePresence mode="wait" custom={direction}>
                       <MotionBox
                         key={currentPage}
@@ -858,23 +861,36 @@ function App() {
                         // Special override for initial envelope opening (page 0, direction 1)
                         initial={
                           currentPage === 0 && direction === 1
-                            ? { y: 250, opacity: 0, scale: 0.85, rotateY: 0 }
+                            ? {
+                                y: 400,
+                                opacity: 0,
+                                scale: 0.4,
+                                rotateY: 0,
+                                zIndex: 10,
+                              }
                             : "enter"
                         }
                         animate={
                           currentPage === 0 && direction === 1
-                            ? { y: 0, opacity: 1, scale: 1, rotateY: 0 }
+                            ? {
+                                y: 0,
+                                opacity: 1,
+                                scale: 1,
+                                rotateY: 0,
+                                zIndex: 10,
+                              }
                             : "center"
                         }
                         exit="exit"
                         transition={{
-                          delay: currentPage === 0 && direction === 1 ? 1.0 : 0,
+                          delay: currentPage === 0 && direction === 1 ? 1.2 : 0, // Waits until flap is open
                           duration: 0.8,
                           ease: "easeOut",
                         }}
                         style={{ transformOrigin: "left center" }}
                         w="full"
                         position="absolute"
+                        zIndex={10} // Ensures letter slides OVER the envelope
                       >
                         <LinedPaper>
                           {/* VIEW 1: Standard Letter Pages */}
@@ -1024,6 +1040,8 @@ function App() {
                                 I LOVE YOU!
                               </Heading>
                               <Text
+                                margin
+                                bottom="30px"
                                 fontSize="lg"
                                 color="gray.700"
                                 fontFamily="serif"
