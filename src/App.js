@@ -340,7 +340,6 @@ function App() {
           </VStack>
         </Section>
 
-        {/* Section 4: Romantic Quote */}
         {/* Section 4: The Poem on Paper */}
         <Section bg="whiteAlpha.400">
           <VStack gap="10" w="full">
@@ -361,44 +360,14 @@ function App() {
               w="full"
               maxW="2xl"
             >
-              <Box
-                w="full"
-                bg="white"
-                p={{ base: "8", md: "12" }}
-                borderRadius="sm"
-                boxShadow="2xl"
-                position="relative"
-                // The red margin line
-                _before={{
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: { base: "35px", md: "55px" },
-                  width: "2px",
-                  height: "100%",
-                  borderLeft: "2px solid",
-                  borderColor: "red.200",
-                }}
-                // The horizontal blue lines
-                backgroundImage="linear-gradient(#e9f2ff 1.1px, transparent 1.1px)"
-                backgroundSize="100% 40px" // Slightly larger lines for the poem
-              >
-                <VStack
-                  align="start"
-                  pl={{ base: "10", md: "16" }}
-                  fontFamily="serif"
-                  fontSize={{ base: "lg", md: "2xl" }}
-                  color="gray.700"
-                  fontStyle="italic"
-                  lineHeight="40px" // Must match backgroundSize exactly
-                  gap="0"
-                >
+              {/* WE ARE NOW USING THE COMPONENT HERE */}
+              <LinedPaper>
+                <VStack align="start" gap="0">
                   <Text>Same streets, same halls, a dozen years,</Text>
                   <Text>I held my breath and hid my fears.</Text>
                   <Text>A silent ghost within your view,</Text>
                   <Text>Just inches from the heart of you.</Text>
 
-                  {/* This empty text block creates a blank "line" on the paper */}
                   <Text>&nbsp;</Text>
 
                   <Text>I waited for the stars to align,</Text>
@@ -406,7 +375,7 @@ function App() {
                   <Text>The string was pulled, the silence broke,</Text>
                   <Text>You said the words I never spoke.</Text>
                 </VStack>
-              </Box>
+              </LinedPaper>
             </MotionBox>
           </VStack>
         </Section>
